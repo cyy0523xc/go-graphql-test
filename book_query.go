@@ -37,14 +37,22 @@ var booksQuery = &graphql.Field{
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var res = make([]Book, 0)
-		userId, ok := params.Args["userId"].(int)
-		fmt.Printf("%+v\n", params)
-		if ok {
-			id := uint32(userId)
-			for _, book := range books {
-				if book.UserId == id {
-					res = append(res, book)
-				}
+		var userId uint32
+
+		//fmt.Printf("%+v\n", params)
+		fmt.Printf("--------------\n")
+		if id, ok := params.Args["userId"].(int); ok {
+			userId = uint32(id)
+		} else if user, ok := params.Source.(User); ok {
+			// 如果父级对象是user，则获取其user.Id
+			userId = user.Id
+		} else {
+			return books, nil
+		}
+
+		for _, book := range books {
+			if book.UserId == userId {
+				res = append(res, book)
 			}
 		}
 
