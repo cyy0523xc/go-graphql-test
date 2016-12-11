@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -50,11 +52,24 @@ func ParseControllerArgs(args map[string]interface{}) (ctrlParams *CtrlArgs) {
 		ctrlParams.Limit = uint(val.(int))
 	}
 	if val, ok := args["sort"]; ok {
-		ctrlParams.Sort = val.(string)
+		ctrlParams.Sort = strings.TrimSpace(val.(string))
 	}
 	if val, ok := args["groupby"]; ok {
-		ctrlParams.GroupBy = val.(string)
+		ctrlParams.GroupBy = strings.TrimSpace(val.(string))
 	}
 
 	return ctrlParams
+}
+
+func parseSortSql(sortStr string) string {
+	sortStr = strings.TrimSpace(sortStr)
+	arr := strings.Split(sortStr, ",")
+	for i, val := range arr {
+		if val[0] == '-' {
+			arr[i] = val[1:] + " DESC"
+		} else {
+			arr[i] = val + " ASC"
+		}
+	}
+	return strings.Join(arr, ",")
 }
