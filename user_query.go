@@ -30,12 +30,14 @@ var usersQuery = &graphql.Field{
 	Type: graphql.NewList(userType),
 	Args: graphql.FieldConfigArgument{
 		"status": &graphql.ArgumentConfig{
-			Type: graphql.Int,
+			Type:         graphql.Int,
+			DefaultValue: 10,
 		},
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var resUsers = make([]User, 0)
 		statusQuery, ok := params.Args["status"].(int)
+		println("status value: ", statusQuery)
 		if ok {
 			status := uint8(statusQuery)
 			for _, user := range users {
