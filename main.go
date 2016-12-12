@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/graphql-go/graphql"
+	//"github.com/graphql-go/handler"
 )
 
 // 用户
@@ -66,10 +67,18 @@ var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	//Mutation: rootMutation,
 })
 
-func executeQuery(query string, schema graphql.Schema) *graphql.Result {
+func executeQuery(query string, varsJson string, schema graphql.Schema) *graphql.Result {
+	var vars = make(map[string]interface{})
+	if varsJson != "" {
+		if err := json.Unmarshal([]byte(varsJson), &vars); err != nil {
+			fmt.Printf("vars: %s, error: %s\n", varsJson, err.Error())
+		}
+	}
+
 	result := graphql.Do(graphql.Params{
-		Schema:        schema,
-		RequestString: query,
+		Schema:         schema,
+		RequestString:  query,
+		VariableValues: vars,
 	})
 	if len(result.Errors) > 0 {
 		fmt.Printf("wrong result, unexpected errors: %v", result.Errors)
@@ -77,15 +86,25 @@ func executeQuery(query string, schema graphql.Schema) *graphql.Result {
 	return result
 }
 func main() {
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		result := executeQuery(r.URL.Query()["query"][0], schema)
-		json.NewEncoder(w).Encode(result)
-	})
-
 	url := "http://localhost:8080/graphql"
 	fmt.Println("Now server is running on port 8080")
 	fmt.Printf("获取单个用户：curl -g '%s?query={user(id:1){id,name}}'\n", url)
-	fmt.Printf("获取单个用户及其书名：curl -g '%s?query={user(id:1){id,name,book(userId:1){name}}}'\n", url)
+	fmt.Printf("获取单个用户：curl -g '%s?query=query+getUserList($id:Int){user(id:$id){id,name}}&vars={\"id\":1}'\n", url)
+	fmt.Printf("获取单个用户及其书名：curl -g '%s?query={user(id:1){id,name,books(userId:1){userId,name}}}'\n", url)
+
+	//h := handler.New(&handler.Config{
+	//Schema: &schema,
+	//Pretty: true,
+	//})
+
+	// serve HTTP
+	//http.Handle("/graphql", h)
+	//http.ListenAndServe(":8080", nil)
+
+	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
+		result := executeQuery(r.FormValue("query"), r.FormValue("vars"), schema)
+		json.NewEncoder(w).Encode(result)
+	})
 
 	http.ListenAndServe(":8080", nil)
 }
