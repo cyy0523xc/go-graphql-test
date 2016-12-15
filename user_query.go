@@ -36,10 +36,10 @@ var usersQuery = &graphql.Field{
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 		var resUsers = make([]User, 0)
-		statusQuery, ok := params.Args["status"].(int)
-		println("status value: ", statusQuery)
+		status, ok := params.Args["status"].(uint8)
 		if ok {
-			status := uint8(statusQuery)
+			println("status value: ", status)
+			//status := uint8(statusQuery)
 			for _, user := range users {
 				if user.Status == status {
 					resUsers = append(resUsers, user)
