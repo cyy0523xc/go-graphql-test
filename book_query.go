@@ -40,6 +40,7 @@ var booksQuery = &graphql.Field{
 		var userId uint32
 
 		fmt.Printf("%+v\n", params)
+		fmt.Printf("%+v\n", params.Info.FieldASTs[0].SelectionSet.Selections[0])
 		if id, ok := params.Args["userId"].(int); ok {
 			userId = uint32(id)
 		} else if user, ok := params.Source.(User); ok {

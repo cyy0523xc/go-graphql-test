@@ -88,6 +88,7 @@ func executeQuery(query string, paramsJson string, schema graphql.Schema) *graph
 func main() {
 	url := "http://localhost:8080/graphql"
 	fmt.Println("Now server is running on port 8080")
+	fmt.Printf("查询接口详情：curl -g '%s?query={__type(name:\"User\"){name,description,fields{name,description,type{name}}}}'\n", url)
 	fmt.Printf("获取单个用户：curl -g '%s?query={user(id:1){id,name}}'\n", url)
 	fmt.Printf("获取单个用户：curl -g '%s?query=query+getUserList($id:Int){user(id:$id){id,name}}&params={\"id\":1}'\n", url)
 	fmt.Printf("获取单个用户及其书名：curl -g '%s?query={user(id:1){id,name,books(userId:1){userId,name}}}'\n", url)

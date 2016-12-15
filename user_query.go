@@ -39,7 +39,6 @@ var usersQuery = &graphql.Field{
 		status, ok := params.Args["status"].(uint8)
 		if ok {
 			println("status value: ", status)
-			//status := uint8(statusQuery)
 			for _, user := range users {
 				if user.Status == status {
 					resUsers = append(resUsers, user)
