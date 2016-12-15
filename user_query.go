@@ -30,8 +30,8 @@ var usersQuery = &graphql.Field{
 	Type: graphql.NewList(userType),
 	Args: graphql.FieldConfigArgument{
 		"status": &graphql.ArgumentConfig{
-			Type:         graphql.Int,
-			DefaultValue: 10,
+			Type:         userStatusType,
+			DefaultValue: 0,
 		},
 	},
 	Resolve: func(params graphql.ResolveParams) (interface{}, error) {

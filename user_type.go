@@ -17,11 +17,29 @@ var userType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 		"status": &graphql.Field{
-			Type: graphql.Int,
+			Type: userStatusType,
 		},
 
 		// 直接关联书籍的查询
 		// 怎么将这里的参数传递过去？
 		"books": booksQuery,
+	},
+})
+
+var userStatusType = graphql.NewEnum(graphql.EnumConfig{
+	Name: "UserStatus",
+	Values: graphql.EnumValueConfigMap{
+		// 普通用户
+		"NORMAL": &graphql.EnumValueConfig{
+			Value: uint8(0),
+		},
+		// 付费用户
+		"MONEY": &graphql.EnumValueConfig{
+			Value: uint8(1),
+		},
+		// 高级用户
+		"HIGH": &graphql.EnumValueConfig{
+			Value: uint8(2),
+		},
 	},
 })
